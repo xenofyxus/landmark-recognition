@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+# Ignore dataset
+# This is downloaded when running testing.py
+data/
+
 # Distribution / packaging
 .Python
 build/
