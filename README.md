@@ -1,0 +1,2 @@
+# landmark-recognition
+The challenge is to train a model on a large dataset provided by google depicting landmarks. The original dataset contains 30 000 unique landmarks (classes) and over 2 000 000 training examples of these landmarks. The goal of the challenge is to get the highest prediction rate after training a model. In order to scale the problem down to a realistic size, we will use a subset of the data to train our model. Our approach will be to train a deep convolutional neural network in pytorch.
