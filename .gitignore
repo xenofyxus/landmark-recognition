@@ -10,6 +10,9 @@ __pycache__/
 # This is downloaded when running testing.py
 data/
 
+#Ignore visual studio directory
+.vs/
+
 # Distribution / packaging
 .Python
 build/
