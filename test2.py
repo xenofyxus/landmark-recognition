@@ -6,7 +6,7 @@ import numpy as np
 import Net2 as initializeNet
 import torch.optim as optim
 import os
-
+import Dataset as ds
 
 # This is the two-step process used to prepare the
 # data for use with the convolutional neural network.
@@ -22,14 +22,21 @@ import os
 # reduce the chance of vanishing gradients with certain 
 # activation functions.
 
+classes = np.arange(9)
+
 transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
-fakedata = torchvision.datasets.FakeData(size=1000, image_size=(3, 128, 128), num_classes=10, transform=None, target_transform=None, random_offset=0)
+full_dataset = torch.utils.data.DataLoader(dataset=ds.GoogleLandmarksDataset,batch_size=4,shuffle=True)
 
-trainloader = torch.utils.data.DataLoader(fakedata, batch_size=4, shuffle=True)
+train_size = int(0.99 * len(ds.GoogleLandmarksDataset))
+test_size = len(ds.GoogleLandmarksDataset) - train_size
 
-classes = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+train_dataset, test_dataset = torch.utils.data.random_split(ds.GoogleLandmarksDataset, [train_size, test_size])
 
+train_loader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=4, shuffle=True)
+test_loader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=4, shuffle=True)
+
+dataset = test_loader
 
 def convert_to_imshow_format(image):
     # first convert back to [0,1] range from [-1,1] range
@@ -63,10 +70,10 @@ else:
     for epoch in range(3):  # loop over the dataset multiple times
 
         running_loss = 0.0
-        for i, data in enumerate(trainloader, 0):
+        for i, data in enumerate(dataset, 0):
+            
             # get the inputs
             inputs, labels = data
-
             # zero the parameter gradients
             optimizer.zero_grad()
 
@@ -78,9 +85,9 @@ else:
 
             # print statistics
             running_loss += loss.item()
-            if i % 2000 == 1999:    # print every 2000 mini-batches
+            if i % 500 == 499:    # print every 2000 mini-batches
                 print('[%d, %5d] loss: %.3f' %
-                      (epoch + 1, i + 1, running_loss / 2000))
+                      (epoch + 1, i + 1, running_loss / 500))
                 running_loss = 0.0
     print('Finished Training.')
     torch.save(net.state_dict(), model_path)
@@ -89,7 +96,7 @@ else:
 
 
 # Load four images from the test set
-dataiter = iter(trainloader)
+dataiter = iter(dataset)
 images, labels = dataiter.next()
 
 fig, axes = plt.subplots(1, len(images), figsize=(12, 2.5))
@@ -109,7 +116,6 @@ outputs = net(images)
 
 sm = torch.nn.Softmax(dim=1)
 sm_outputs = sm(outputs)
-print(sm_outputs)
 
 probs, index = torch.max(sm_outputs, dim=1)
 

@@ -50,15 +50,6 @@ class GoogleLandmarks(Dataset):
     def __len__(self):
         return self.data_len
 
-if __name__ == "__main__":
-    # Call dataset
-    GoogleLandmarksDataset =  GoogleLandmarks('data/labels2.csv')
+
+GoogleLandmarksDataset =  GoogleLandmarks('data/labels2.csv')
     
-    dataset = torch.utils.data.DataLoader(dataset=GoogleLandmarksDataset,batch_size=10,shuffle=False)
-    
-    start = time.time()
-    i = 0
-    
-    for images, labels in dataset:
-        #train network here
-        print(time.time() - start)
