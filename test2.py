@@ -22,13 +22,13 @@ import Dataset as ds
 # reduce the chance of vanishing gradients with certain 
 # activation functions.
 
-classes = np.arange(9)
+classes = np.arange(99)
 
 transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
 full_dataset = torch.utils.data.DataLoader(dataset=ds.GoogleLandmarksDataset,batch_size=4,shuffle=True)
 
-train_size = int(0.99 * len(ds.GoogleLandmarksDataset))
+train_size = int(0.95 * len(ds.GoogleLandmarksDataset))
 test_size = len(ds.GoogleLandmarksDataset) - train_size
 
 train_dataset, test_dataset = torch.utils.data.random_split(ds.GoogleLandmarksDataset, [train_size, test_size])
@@ -57,7 +57,7 @@ criterion = torch.nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
 model_directory_path = '/home/fakedatamodel'
-model_path = model_directory_path + 'fakedata_model.pt'
+model_path = model_directory_path + 'fakedata_model1.pt'
 
 if not os.path.exists(model_directory_path):
     os.makedirs(model_directory_path)
@@ -126,9 +126,9 @@ for p, i in zip(probs, index):
 # Calculate and print model for 10000 images from the test set
 total_correct = 0
 total_images = 0
-confusion_matrix = np.zeros([10, 10], int)
+confusion_matrix = np.zeros([99, 99], int)
 with torch.no_grad():
-    for data in trainloader:
+    for data in dataset:
         images, labels = data
         outputs = net(images)
         _, predicted = torch.max(outputs.data, 1)
@@ -141,34 +141,18 @@ model_accuracy = total_correct / total_images * 100
 print('Model accuracy on {0} test images: {1:.2f}%'.format(total_images, model_accuracy))
 
 # Computing the confusion matrix for the test set.
-print('{0:10s} - {1}'.format('Category', 'Accuracy'))
+print('{0:99s} - {1}'.format('Category', 'Accuracy'))
 for i, r in enumerate(confusion_matrix):
-    print('{0:10s} - {1:.1f}'.format(classes[i], r[i]/np.sum(r)*100))
+    print('{0:99d} - {1:.1f}'.format(classes[i], r[i]/np.sum(r)*100))
 
 # Visualize the confusion matrix for the test set.
 fig, ax = plt.subplots(1, 1, figsize=(8, 6))
 ax.matshow(confusion_matrix, aspect='auto', vmin=0, vmax=1000, cmap=plt.get_cmap('Blues'))
 plt.ylabel('Actual Category')
-plt.yticks(range(10), classes)
+plt.yticks(range(99), classes)
 plt.xlabel('Predicted Category')
-plt.xticks(range(10), classes)
+plt.xticks(range(99), classes)
 plt.show()
 
-# Also print the absolute and relative values for the confusion matrix
-print('actual/pred'.ljust(16), end='')
-for i, c in enumerate(classes):
-    print(c.ljust(10), end='')
-print()
-for i, r in enumerate(confusion_matrix):
-    print(classes[i].ljust(16), end='')
-    for idx, p in enumerate(r):
-        print(str(p).ljust(10), end='')
-    print()
-    
-    r = r/np.sum(r)
-    print(''.ljust(16), end='')
-    for idx, p in enumerate(r):
-        print(str(p).ljust(10), end='')
-    print()
 
 
