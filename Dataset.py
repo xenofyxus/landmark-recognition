@@ -5,15 +5,12 @@ Created on Mon May 13 11:40:06 2019
 @author: vaken
 """
 
-import torch
 from torch.utils.data.dataset import Dataset
 from torchvision import transforms
 import numpy as np
 import pandas as pd
 from PIL import Image
-import matplotlib.pyplot as plt
-import time
-
+import torch
 class GoogleLandmarks(Dataset):
     def __init__(self, csv_path):
         """
@@ -49,7 +46,3 @@ class GoogleLandmarks(Dataset):
             
     def __len__(self):
         return self.data_len
-
-
-GoogleLandmarksDataset =  GoogleLandmarks('data/labels2.csv')
-    

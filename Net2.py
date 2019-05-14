@@ -1,7 +1,6 @@
 import torch.nn as nn
 import torch.nn.functional as F
 
-
 class Net2(nn.Module):
     def __init__(self):
         super(Net2, self).__init__()
@@ -11,6 +10,8 @@ class Net2(nn.Module):
         self.fc1 = nn.Linear(16 * 28 * 28, 120)
         self.fc2 = nn.Linear(120, 84)
         self.fc3 = nn.Linear(84, 99)
+        
+        self.lossOverTime = []
 
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))

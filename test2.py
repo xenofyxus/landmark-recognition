@@ -7,7 +7,7 @@ import Net2 as initializeNet
 import torch.optim as optim
 import os
 import Dataset as ds
-
+import time
 # This is the two-step process used to prepare the
 # data for use with the convolutional neural network.
 
@@ -57,7 +57,7 @@ criterion = torch.nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
 model_directory_path = '/home/fakedatamodel'
-model_path = model_directory_path + 'fakedata_model1.pt'
+model_path = model_directory_path + 'fakedata_model3.pt'
 
 if not os.path.exists(model_directory_path):
     os.makedirs(model_directory_path)
@@ -70,6 +70,7 @@ else:
     for epoch in range(3):  # loop over the dataset multiple times
 
         running_loss = 0.0
+        start = time.time()
         for i, data in enumerate(dataset, 0):
             
             # get the inputs
@@ -86,6 +87,7 @@ else:
             # print statistics
             running_loss += loss.item()
             if i % 500 == 499:    # print every 2000 mini-batches
+                print(time.time() - start)
                 print('[%d, %5d] loss: %.3f' %
                       (epoch + 1, i + 1, running_loss / 500))
                 running_loss = 0.0
