@@ -18,14 +18,13 @@ torch.backends.cudnn.deterministic=True
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 model_directory_path = 'models/'
-model_path = model_directory_path + '/e30b30.pt'
+model_path = model_directory_path + '/newmodel.pt'
 
-batch_size = 30
+batch_size = 32
 epochs = 30
 learning_rate = 0.001
 momentum = 0.9
 
-lossList = np.zeros(30)
 
 # This is the two-step process used to prepare the
 # data for use with the convolutional neural network.
@@ -90,7 +89,7 @@ else:
         for i, data in enumerate(train_loader, 0):
             # get the inputs
             inputs, labels = data
-            
+			
             #use GPU if available
             if torch.cuda.is_available():
                 inputs = inputs.to(device)
@@ -108,10 +107,11 @@ else:
 
             # print statistics
             running_loss += loss.item()
-            if i % 1000 == 999:    # print every 1000 mini-batches
-                lossOverTime.append((epoch + 1, i + 1, running_loss / 1000))
+            if i % 100 == 99:    # print every 1000 mini-batches
+                print(time.time()-start)
+                lossOverTime.append((epoch + 1, i + 1, running_loss / 100))
                 print('[%d, %5d] loss: %.3f' %
-                      (epoch + 1, i + 1, running_loss / 1000))
+                      (epoch + 1, i + 1, running_loss / 100))
                 running_loss = 0.0
     print('Finished Training.')
     net.lossOverTime = lossOverTime
@@ -158,7 +158,7 @@ total_correct = 0
 total_images = 0
 confusion_matrix = np.zeros([99, 99], int)
 with torch.no_grad():
-    for data in train_loader:
+    for data in test_loader:
         images, labels = data
         images = images.to(device)
         labels = labels.to(device)
