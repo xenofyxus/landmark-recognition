@@ -11,6 +11,7 @@ class Net2(nn.Module):
         self.fc2 = nn.Linear(120, 84)
         self.fc3 = nn.Linear(84, 99)
         
+        self.model_accuracy = []
         self.lossOverTime = []
 
     def forward(self, x):

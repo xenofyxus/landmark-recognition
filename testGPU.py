@@ -18,7 +18,7 @@ torch.backends.cudnn.deterministic=True
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 model_directory_path = 'models/'
-model_path = model_directory_path + '/newmodel.pt'
+model_path = model_directory_path + '/test1.pt'
 
 batch_size = 32
 epochs = 30
@@ -58,9 +58,6 @@ test_loader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=batch
 valid_loader = torch.utils.data.DataLoader(dataset=valid_dataset, batch_size=batch_size, shuffle=True)
 
 classes = np.arange(99)
-
-lossOverTime = []
-accOverTime = []
 
 # Initialize network with structure specified in Net.py 
 net = initializeNet.Net2()
@@ -109,17 +106,39 @@ else:
             running_loss += loss.item()
             if i % 100 == 99:    # print every 1000 mini-batches
                 print(time.time()-start)
-                lossOverTime.append((epoch + 1, i + 1, running_loss / 100))
+                net.lossOverTime.append(running_loss / 100)
                 print('[%d, %5d] loss: %.3f' %
                       (epoch + 1, i + 1, running_loss / 100))
                 running_loss = 0.0
+        '''
+        total_correct = 0
+        total_images = 0
+        with torch.no_grad():
+            for data in test_loader:
+                images, labels = data
+                images = images.to(device)
+                labels = labels.to(device)
+                outputs = net(images)
+                _, predicted = torch.max(outputs.data, 1)
+                total_images += labels.size(0)
+                total_correct += (predicted == labels).sum().item()
+        
+        model_accuracy = total_correct / total_images * 100
+        net.model_accuracy.append(model_accuracy)
+        '''
     print('Finished Training.')
-    net.lossOverTime = lossOverTime
     torch.save(net.state_dict(), model_path)
     print('Saved model parameters to disk.')
-    
-    
-    
+    plt.plot(net.lossOverTime)
+    plt.savefig('loss.png', bbox_inches='tight')
+    '''
+    plt.plot(net.model_accuracy)
+    plt.savefig('accuracy.png', bbox_inches='tight')
+    '''
+
+
+
+'''
 # Load four images from the test set
 dataiter = iter(test_loader)
 images, labels = dataiter.next()
@@ -152,7 +171,6 @@ probs, index = torch.max(sm_outputs, dim=1)
 for p, i in zip(probs, index):
     print('{0} - {1:.4f}'.format(classes[i], p))
 
-
 # Calculate and print model for 10000 images from the test set
 total_correct = 0
 total_images = 0
@@ -172,6 +190,7 @@ with torch.no_grad():
 model_accuracy = total_correct / total_images * 100
 print('Model accuracy on {0} test images: {1:.2f}%'.format(total_images, model_accuracy))
 
+
 # Computing the confusion matrix for the test set.
 print('{0:99s} - {1}'.format('Category', 'Accuracy'))
 for i, r in enumerate(confusion_matrix):
@@ -185,5 +204,7 @@ plt.yticks(range(99), classes)
 plt.xlabel('Predicted Category')
 plt.xticks(range(99), classes)
 plt.show()
+
+'''
 
 
